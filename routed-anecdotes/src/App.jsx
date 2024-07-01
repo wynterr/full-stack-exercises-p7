@@ -1,29 +1,11 @@
 import { useState } from "react"
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom"
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import AnecdoteList from "./components/AnecdoteList"
 import About from "./components/About"
 import Footer from "./components/Footer"
 import CreateNew from "./components/CreateNew"
 import Anecdote from "./components/Anecdote"
-
-const Menu = () => {
-  const padding = {
-    paddingRight: 5,
-  }
-  return (
-    <div>
-      <Link to="/" style={padding}>
-        anecdotes
-      </Link>
-      <Link to="/create" style={padding}>
-        create new
-      </Link>
-      <Link to="/about" style={padding}>
-        about
-      </Link>
-    </div>
-  )
-}
+import Menu from "./components/Menu"
 
 const App = () => {
   const [anecdotes, setAnecdotes] = useState([
