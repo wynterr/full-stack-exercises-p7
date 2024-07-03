@@ -7,27 +7,27 @@ import loginService from "./services/login"
 import BlogForm from "./components/BlogForm"
 import Togglable from "./components/togglable"
 import { showError } from "./reducers/notificationReducer"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
+import { initializeBlogs, createBlogSync, updateBlogSync, deleteBlogSync} from "./reducers/blogReducer"
+import { setUser } from "./reducers/userReducer"
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
-  const [user, setUser] = useState(null)
   const blogFormRef = useRef()
   const dispatch = useDispatch()
+  const blogs = useSelector((state) => state.blogs)
+  const user = useSelector((state) => state.user)
 
   useEffect(() => {
-    blogService
-      .getAll()
-      .then((blogs) => setBlogs(blogs.sort((a, b) => b.likes - a.likes)))
-  }, [])
+    dispatch(initializeBlogs())
+  }, [dispatch])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedUser")
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)
+      dispatch(setUser(user))
       blogService.setToken(user.token)
     }
   }, [])
@@ -42,7 +42,7 @@ const App = () => {
       })
       window.localStorage.setItem("loggedUser", JSON.stringify(user))
       blogService.setToken(user.token)
-      setUser(user)
+      dispatch(setUser(user))
       setUsername("")
       setPassword("")
     } catch (exception) {
@@ -54,31 +54,23 @@ const App = () => {
 
   const handleLogout = () => {
     window.localStorage.removeItem("loggedUser")
-    setUser(null)
+    dispatch(setUser(null))
     blogService.setToken(null)
   }
 
   const createBlog = async (blogObject) => {
     blogFormRef.current.toggleVisibility()
-    const returnedBlog = await blogService.create(blogObject)
-    console.log(returnedBlog)
-    setBlogs(blogs.concat(returnedBlog).sort((a, b) => b.likes - a.likes))
+    dispatch(createBlogSync(blogObject))
     return returnedBlog
   }
 
   const updateBlog = async (blogObject) => {
-    const returnedBlog = await blogService.update(blogObject.id, blogObject)
-    setBlogs(
-      blogs
-        .map((blog) => (blog.id !== blogObject.id ? blog : returnedBlog))
-        .sort((a, b) => b.likes - a.likes)
-    )
+    dispatch(updateBlogSync(blogObject))
     return returnedBlog
   }
 
   const deleteBlog = async (id) => {
-    await blogService.remove(id)
-    setBlogs(blogs.filter((blog) => blog.id !== id))
+    dispatch(deleteBlogSync(id))
   }
 
   if (user === null) {
