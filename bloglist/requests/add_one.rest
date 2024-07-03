@@ -1,0 +1,24 @@
+POST http://localhost:3001/api/persons/
+Content-Type: application/json
+
+{
+    "name": "Wentao"
+}
+###
+POST http://localhost:3001/api/persons/
+Content-Type: application/json
+
+{
+    "number": "16213981273"
+}
+###
+POST http://localhost:3001/api/blogs/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1pYWEiLCJpZCI6IjY2NzMzYTc3MzE0ZDI2YWVhZDI3ZWQ2YyIsImlhdCI6MTcxODkwNzk2MCwiZXhwIjoxNzE4OTExNTYwfQ.YsFK2ufPeB1mB7MaLQrd4rEQyL9LYiioY4QfJz9_qXk
+
+{
+    "title": "midsummer",
+    "author": "Mia",
+    "url": "https://www.god3-is-not-a-girl.com",
+    "likes": 12434
+}

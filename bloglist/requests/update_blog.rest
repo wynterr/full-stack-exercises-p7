@@ -1,0 +1,11 @@
+PUT http://localhost:3001/api/blogs/66747abd6a2ef9afd41b9fb6
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1pYWEiLCJpZCI6IjY2NzMzYTc3MzE0ZDI2YWVhZDI3ZWQ2YyIsImlhdCI6MTcxOTI1OTY2OSwiZXhwIjoxNzE5MjYzMjY5fQ.TzKsRYuJ6sOQ_m4M9nprJmt31zj7VzkC5kGBUOdguNs
+
+{
+    "title": "midsummerevee",
+    "author": "Mia",
+    "url": "https://www.god3-is-not-a-girl.com",
+    "likes": 5,
+    "user": "66733a77314d26aead27ed6c"
+}
