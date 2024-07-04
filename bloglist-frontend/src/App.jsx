@@ -8,29 +8,50 @@ import BlogForm from "./components/BlogForm"
 import Togglable from "./components/togglable"
 import { showError } from "./reducers/notificationReducer"
 import { useDispatch, useSelector } from "react-redux"
-import { initializeBlogs, createBlogSync, updateBlogSync, deleteBlogSync} from "./reducers/blogReducer"
+import {
+  initializeBlogs,
+  createBlogSync,
+  updateBlogSync,
+  deleteBlogSync,
+} from "./reducers/blogReducer"
 import { setUser } from "./reducers/userReducer"
+import userService from "./services/users"
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  useMatch,
+} from "react-router-dom"
+import UserList from "./components/UserList"
+import User from "./components/User"
 
 const App = () => {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
+  const [users, setUsers] = useState([])
   const blogFormRef = useRef()
   const dispatch = useDispatch()
   const blogs = useSelector((state) => state.blogs)
   const user = useSelector((state) => state.user)
 
-  useEffect(() => {
-    dispatch(initializeBlogs())
-  }, [dispatch])
+  const match = useMatch("/users/:id")
+  const pageUser = match
+    ? users.find((user) => user.id === match.params.id)
+    : null
+
 
   useEffect(() => {
+    dispatch(initializeBlogs())
     const loggedUserJSON = window.localStorage.getItem("loggedUser")
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       dispatch(setUser(user))
       blogService.setToken(user.token)
+      userService.getAll().then((response) => {
+        setUsers(response)
+      })
     }
-  }, [])
+  }, [dispatch])
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -73,6 +94,26 @@ const App = () => {
     dispatch(deleteBlogSync(id))
   }
 
+  const Home = () => {
+    return (
+      <div>
+        <Togglable buttonLabel="new blog" ref={blogFormRef}>
+          <h2>create new</h2>
+          <BlogForm createBlog={createBlog} />
+        </Togglable>
+        {blogs.map((blog) => (
+          <Blog
+            key={blog.id}
+            blog={blog}
+            updateBlog={updateBlog}
+            user={user}
+            deleteBlog={deleteBlog}
+          />
+        ))}
+      </div>
+    )
+  }
+
   if (user === null) {
     return (
       <div>
@@ -95,21 +136,11 @@ const App = () => {
         <p>
           {user.name} logged in <button onClick={handleLogout}>logout</button>
         </p>
-        <Togglable buttonLabel="new blog" ref={blogFormRef}>
-          <h2>create new</h2>
-          <BlogForm
-            createBlog={createBlog}
-          />
-        </Togglable>
-        {blogs.map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            updateBlog={updateBlog}
-            user={user}
-            deleteBlog={deleteBlog}
-          />
-        ))}
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/users" element={<UserList users={users} />} />
+          <Route path="/users/:id" element={<User user={pageUser} />} />
+        </Routes>
       </div>
     )
   }
