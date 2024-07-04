@@ -24,6 +24,8 @@ import {
 } from "react-router-dom"
 import UserList from "./components/UserList"
 import User from "./components/User"
+import BlogDetail from "./components/BlogDetail"
+import Navigation from "./components/Navigation"
 
 const App = () => {
   const [username, setUsername] = useState("")
@@ -34,11 +36,15 @@ const App = () => {
   const blogs = useSelector((state) => state.blogs)
   const user = useSelector((state) => state.user)
 
-  const match = useMatch("/users/:id")
-  const pageUser = match
-    ? users.find((user) => user.id === match.params.id)
+  const userMatch = useMatch("/users/:id")
+  const pageUser = userMatch
+    ? users.find((user) => user.id === userMatch.params.id)
     : null
 
+  const blogMatch = useMatch("/blogs/:id")
+  const pageBlog = blogMatch
+    ? blogs.find((blog) => blog.id === blogMatch.params.id)
+    : null
 
   useEffect(() => {
     dispatch(initializeBlogs())
@@ -73,11 +79,7 @@ const App = () => {
     }
   }
 
-  const handleLogout = () => {
-    window.localStorage.removeItem("loggedUser")
-    dispatch(setUser(null))
-    blogService.setToken(null)
-  }
+
 
   const createBlog = async (blogObject) => {
     blogFormRef.current.toggleVisibility()
@@ -102,13 +104,7 @@ const App = () => {
           <BlogForm createBlog={createBlog} />
         </Togglable>
         {blogs.map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            updateBlog={updateBlog}
-            user={user}
-            deleteBlog={deleteBlog}
-          />
+          <Blog key={blog.id} blog={blog} />
         ))}
       </div>
     )
@@ -131,15 +127,17 @@ const App = () => {
   } else {
     return (
       <div>
-        <h2>blogs</h2>
+        <Navigation />
         <Notification />
-        <p>
-          {user.name} logged in <button onClick={handleLogout}>logout</button>
-        </p>
+        <h2>Blogs app</h2> 
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/users" element={<UserList users={users} />} />
           <Route path="/users/:id" element={<User user={pageUser} />} />
+          <Route
+            path="/blogs/:id"
+            element={<BlogDetail blog={pageBlog} user={user} />}
+          />
         </Routes>
       </div>
     )
