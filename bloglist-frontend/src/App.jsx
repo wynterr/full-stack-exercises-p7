@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react"
-import Blog from "./components/Blog"
 import LoginForm from "./components/LoginForm"
 import Notification from "./components/Notification"
 import blogService from "./services/blogs"
@@ -21,11 +20,13 @@ import {
   Route,
   Routes,
   useMatch,
+  Link
 } from "react-router-dom"
 import UserList from "./components/UserList"
 import User from "./components/User"
 import BlogDetail from "./components/BlogDetail"
 import Navigation from "./components/Navigation"
+import { Table } from "react-bootstrap"
 
 const App = () => {
   const [username, setUsername] = useState("")
@@ -79,8 +80,6 @@ const App = () => {
     }
   }
 
-
-
   const createBlog = async (blogObject) => {
     blogFormRef.current.toggleVisibility()
     dispatch(createBlogSync(blogObject))
@@ -103,16 +102,25 @@ const App = () => {
           <h2>create new</h2>
           <BlogForm createBlog={createBlog} />
         </Togglable>
-        {blogs.map((blog) => (
-          <Blog key={blog.id} blog={blog} />
-        ))}
+        <Table striped>
+          <tbody>
+            {blogs.map((blog) => (
+              <tr key={blog.id}>
+                <td>
+                  <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+                </td>
+                <td>{blog.author}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
       </div>
     )
   }
 
   if (user === null) {
     return (
-      <div>
+      <div className="container">
         <h2>log in to application</h2>
         <Notification />
         <LoginForm
@@ -126,10 +134,10 @@ const App = () => {
     )
   } else {
     return (
-      <div>
+      <div className="container">
         <Navigation />
         <Notification />
-        <h2>Blogs app</h2> 
+        <h2>Blogs app</h2>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/users" element={<UserList users={users} />} />
